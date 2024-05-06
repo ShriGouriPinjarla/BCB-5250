@@ -1,0 +1,65 @@
+---
+title: "PCA LAB"
+author: "Shri Gouri Pinjarla"
+date: "2024-04-24"
+output: html_document
+---
+
+```{r echo=TRUE}
+
+data <- read.csv("~/Downloads/data.csv", row.names =1)
+str(data)
+
+
+library("factoextra")
+library("FactoMineR")
+
+
+pca.data <- PCA(data[,-1], scale.unit = TRUE, graph = FALSE)
+fviz_eig(pca.data, addlabels = TRUE, ylim = c(0, 70))
+fviz_pca_var(pca.data, col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+
+pca.data <- PCA(t(data[,-1]), scale.unit = TRUE, graph = FALSE)
+
+fviz_pca_ind(pca.data, col.ind = "cos2", 
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+             repel = TRUE)
+library(ggpubr) 
+
+a <- fviz_pca_ind(pca.data, col.ind = "cos2", 
+                  gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+                  repel = TRUE)
+ggpar(a,
+      title = "Principal Component Analysis",
+      xlab = "PC1", ylab = "PC2",
+      legend.title = "Cos2", legend.position = "top",
+      ggtheme = theme_minimal())
+
+pca.data <- PCA(data[,-1], scale.unit = TRUE,ncp = 2, graph = FALSE)
+
+data$lineage <- as.factor(data$lineage)
+
+
+```
+## The first two principal components explain 81.6% of the variation.
+
+```{r}
+library(RColorBrewer)
+
+nb.cols <- 3
+mycolors <- colorRampPalette(brewer.pal(3, "Set1"))(nb.cols)
+a <- fviz_pca_ind(pca.data, col.ind = data$lineage,
+                  palette = mycolors, addEllipses = TRUE)
+
+ggpar(a,
+      title = "Principal Component Analysis",
+      xlab = "PC1", ylab = "PC2",
+      legend.title = "Cell type", legend.position = "top",
+      ggtheme = theme_minimal())
+```
+## In TE cells the KRT18, KRT8 and S100A16 are highly expresses compare to the other genes. In EPI cells the DPPA5, IFITM1 , MT1X and UPP1 are highly expressed compare to other genes. And in PE cells only APOA1 is highly expressed compare to the other genes.
+
+## The significance of these genes in identifying specific cell types lies in their specialized functions and expression patterns that are characteristic of the unique properties and developmental pathways of TE, EPI, and PE cells. Their expression signatures serve as molecular markers for distinguishing these cell types and understanding their roles in embryonic development and tissue differentiation.
+
